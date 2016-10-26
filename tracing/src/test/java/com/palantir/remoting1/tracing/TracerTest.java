@@ -192,6 +192,17 @@ public final class TracerTest {
         assertThat(Tracer.completeSpan().get().type()).isEqualTo(SpanType.LOCAL);
     }
 
+    @Test
+    public void testAutocloseable() throws Exception {
+        assertThat(Tracer.copyTrace().top()).isEqualTo(Optional.absent());
+        try (OpenSpan span = Tracer.startSpan("test")) {
+            assertThat(span.getOperation()).isEqualTo("test");
+            assertThat(Tracer.copyTrace().top()).isNotEqualTo(Optional.absent());
+        }
+        assertThat(Tracer.copyTrace().top()).isEqualTo(Optional.absent());
+
+    }
+
     private static Span startAndCompleteSpan() {
         Tracer.startSpan("operation");
         return Tracer.completeSpan().get();

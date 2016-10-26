@@ -25,7 +25,7 @@ import org.immutables.value.Value;
  */
 @Value.Immutable
 @Value.Style(visibility = Value.Style.ImplementationVisibility.PACKAGE)
-public abstract class OpenSpan {
+public abstract class OpenSpan implements AutoCloseable {
 
     /**
      * Returns a description of the operation for this event.
@@ -60,6 +60,11 @@ public abstract class OpenSpan {
 
     /** Indicates the {@link SpanType} of this span, e.g., a server-side vs. client-side vs local span. */
     public abstract SpanType type();
+
+    @Override
+    public final void close() throws Exception {
+        Tracer.completeSpan();
+    }
 
     /**
      * Indicates if this trace state was sampled
